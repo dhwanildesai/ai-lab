@@ -2,6 +2,12 @@
 
 > Deterministic record/replay and diffing for LLM agent runs, with zero dependencies.
 
+## Try it live
+
+**[▶ Open the interactive replay](https://dhwanildesai.github.io/ai-lab/flight-recorder/)**: step through the 15 recorded events of a real Claude run, then edit the agent's prompt and watch replay refuse to continue. It runs entirely in your browser from the committed trace, with no network and no API key.
+
+[![Interactive replay of a recorded Claude agent run](../../docs/flight-recorder/preview.png)](https://dhwanildesai.github.io/ai-lab/flight-recorder/)
+
 ## Hypothesis
 Agent failures are hard to debug because runs are nondeterministic and depend on live LLMs and tools.
 If every LLM and tool call is recorded, a run can be **replayed offline with identical behavior**, and
@@ -51,6 +57,8 @@ Replayed offline (15 events, fully consumed: True)
 ANSWER: gamma-evals has the most stars per open issue, with a ratio of 205.00 (410 stars / 2 open issues). ...
 Regression caught after prompt edit: event 0: llm:claude-opus-5-5 called with different input
 ```
+
+![A prompt edit makes replay stop at event 0](../../docs/flight-recorder/preview-regression.png)
 
 The last line is the point: change the agent's system prompt and replay refuses to continue,
 naming the first event that differs. `tests/test_committed_claude_trace.py` runs this in CI.

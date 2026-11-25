@@ -14,7 +14,7 @@ Small, rigorous experiments in AI agents and LLM infrastructure. Each project in
 <!-- INDEX:START -->
 | Project | Claim |
 |---|---|
-| [flight-recorder](projects/flight-recorder) | Record/replay and diff LLM agent runs deterministically, offline |
+| [flight-recorder](projects/flight-recorder) ([live demo](https://dhwanildesai.github.io/ai-lab/flight-recorder/)) | Record/replay and diff LLM agent runs deterministically, offline |
 <!-- INDEX:END -->
 
 ## Conventions
