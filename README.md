@@ -12,7 +12,9 @@ Small, rigorous experiments in AI agents and LLM infrastructure. Each project in
 
 ## Projects
 <!-- INDEX:START -->
-_None yet. See [docs/ideas.md](docs/ideas.md) for the backlog._
+| Project | Claim |
+|---|---|
+| [flight-recorder](projects/flight-recorder) | Record/replay and diff LLM agent runs deterministically, offline |
 <!-- INDEX:END -->
 
 ## Conventions

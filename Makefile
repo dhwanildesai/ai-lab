@@ -1,3 +1,4 @@
+PY ?= python3
 .PHONY: new test lint
 new:
 	@test -n "$(name)" || (echo "usage: make new name=my-idea"; exit 1)
@@ -5,6 +6,6 @@ new:
 	@echo "Created projects/$(name). Fill in its README."
 test:
 	@for d in projects/*/; do case $$d in *_template*) continue;; esac; \
-	  (cd $$d && [ -d tests ] && python -m pytest -q) || exit 1; done
+	  (cd $$d && [ -d tests ] && $(PY) -m pytest -q) || exit 1; done
 lint:
 	ruff check . && ruff format --check .
