@@ -15,6 +15,7 @@ Small, rigorous experiments in AI agents and LLM infrastructure. Each project in
 | Project | Claim |
 |---|---|
 | [flight-recorder](projects/flight-recorder) ([live demo](https://dhwanildesai.github.io/ai-lab/flight-recorder/)) | Record/replay and diff LLM agent runs deterministically, offline |
+| [tool-description-fuzzer](projects/tool-description-fuzzer) | Wording shifts tool-selection accuracy by up to 31 points on simulated selectors, but not at all on Claude Haiku 5.5 (768 real calls; ceiling effect) |
 <!-- INDEX:END -->
 
 ## Conventions
