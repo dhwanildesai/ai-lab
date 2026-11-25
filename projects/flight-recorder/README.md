@@ -26,12 +26,41 @@ agent code ──► Replayer.llm / Replayer.tool ◄── trace.jsonl   (no ne
 | Changed input, wrong tool, extra call, missing call | each detected (see `tests/`) |
 | JSONL save/load round trip | behaviorally identical |
 
-Measured with `pytest`. The benchmark uses a simulated LLM, not a live model; live-model validation is the next step.
+The 200-run benchmark uses a simulated LLM. A real Claude run is recorded and replayed in the example below.
+
+## Example: a real Claude agent run
+
+`examples/real_agent.py` is a small tool-using agent (`list_repos`, `get_repo_stats`, `calculate`)
+driven by real Claude (`claude-opus-5-5`, requested via headless Claude Code). The question:
+*"Which repo has the most stars per open issue, and what is the ratio?"* The committed trace is
+[`examples/traces/claude_agent_run.jsonl`](examples/traces/claude_agent_run.jsonl): **15 events** (7 model calls, 8 tool calls).
+
+| # | Event | Recorded output |
+|---|---|---|
+| 0, 2, 4, 6 | `llm` | Claude calls `list_repos`, then `get_repo_stats` for each repo |
+| 1 | `tool list_repos` | `["alpha-agent", "beta-rag", "gamma-evals"]` |
+| 3 / 5 / 7 | `tool get_repo_stats` | 1240 stars / 31 issues, 860 / 9, 410 / 2 |
+| 8, 10, 12 | `llm` -> `tool calculate` | Claude delegates arithmetic: `205.0`, `95.5556`, `40.0` |
+| 14 | `llm` | *"gamma-evals has the most stars per open issue, with a ratio of 205.00 (410 stars / 2 open issues). It is well ahead of beta-rag at 95.56 and alpha-agent at 40.00."* |
+
+Replaying it needs no network, no API key and no `claude` binary:
+
+```console
+$ python examples/real_agent.py replay
+Replayed offline (15 events, fully consumed: True)
+ANSWER: gamma-evals has the most stars per open issue, with a ratio of 205.00 (410 stars / 2 open issues). ...
+Regression caught after prompt edit: event 0: llm:claude-opus-5-5 called with different input
+```
+
+The last line is the point: change the agent's system prompt and replay refuses to continue,
+naming the first event that differs. `tests/test_committed_claude_trace.py` runs this in CI.
+Re-record with `python examples/real_agent.py record` (or `record --api` for the Messages API).
 
 ## Failure modes
 - Non-JSON-serializable values are stored via `repr`, so they replay as strings.
 - Hidden nondeterminism outside wrapped calls (clocks, random, env) is not captured.
 - Streaming responses are not supported yet.
+- The committed run used a single recording, so it shows replay works on one real run, not that it holds across many.
 
 ## Run it
 ```bash
