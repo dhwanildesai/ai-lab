@@ -183,6 +183,7 @@ def make_cli_llm():
         ]
         out = subprocess.run(
             cmd,
+            check=False,
             input=_render(messages),
             capture_output=True,
             text=True,
