@@ -15,6 +15,7 @@ Small, rigorous experiments in AI agents and LLM infrastructure. Each project in
 | Project | Claim |
 |---|---|
 | [flight-recorder](projects/flight-recorder) ([live demo](https://dhwanildesai.github.io/ai-lab/flight-recorder/)) | Record/replay and diff LLM agent runs deterministically, offline |
+| [tool-description-fuzzer](projects/tool-description-fuzzer) | Wording alone shifts tool-selection accuracy, and accuracy can hide the churn (simulated selectors) |
 <!-- INDEX:END -->
 
 ## Conventions
