@@ -1,0 +1,43 @@
+model=claude-haiku-5-5 unique prompts=768 cached=0 todo=768
+  25/768 done
+  50/768 done
+  75/768 done
+  100/768 done
+  125/768 done
+  150/768 done
+  175/768 done
+  200/768 done
+  225/768 done
+  250/768 done
+  275/768 done
+  300/768 done
+  325/768 done
+  350/768 done
+  375/768 done
+  400/768 done
+  425/768 done
+  450/768 done
+  475/768 done
+  500/768 done
+  525/768 done
+  550/768 done
+  575/768 done
+  600/768 done
+  625/768 done
+  650/768 done
+  675/768 done
+  700/768 done
+  725/768 done
+  750/768 done
+model replies that were not a valid tool name: 0/768
+
+== claude-haiku-5-5 (REAL): baseline accuracy 100.0%
+all tools mutated    acc   delta  95% CI (points)  p_holm  flips
+  identity        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  reorder         100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  synonyms        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  first_sentence  100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  drop_negative   100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  boilerplate     100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  typos           100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  stuffing        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%

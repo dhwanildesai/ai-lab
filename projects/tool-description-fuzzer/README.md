@@ -1,9 +1,11 @@
 # tool-description-fuzzer
 
-> Mutate tool descriptions, hold everything else fixed, and measure how far tool selection moves.
+> Mutate tool descriptions, hold everything else fixed, and measure how far tool selection moves, on simulated selectors and on real Claude.
 
-**No language model was run for this project.** The results come from two simulated lexical selectors.
-The harness accepts a real model through `--cmd`, but that path has only been tested with a fake one.
+**Two result sets, kept separate.** The simulated results (two lexical selectors) show the harness
+detects wording effects. The **real-model results (Claude Haiku 5.5, 768 live calls) show no effect at
+all on this benchmark**: 100% accuracy and 0% flips under every mutation. The likely reason is a
+ceiling effect, not robustness; see [Real model](#real-model-claude-haiku-55).
 
 ## Hypothesis
 Description wording alone, with tool names and tasks held fixed, changes selection accuracy by a
@@ -28,8 +30,9 @@ tasks (48, labelled) ───────────────────�
 - **Flips next to accuracy.** A flip is any change of chosen tool, right or wrong.
 - **Tradeoff:** lexical selectors are free, exact and reproducible, but their sensitivity to wording
   is partly built in. They validate the harness; they do not predict a model.
-- **Tradeoff:** flight-recorder is not used. These selectors are already deterministic; recording
-  would only pay off once a live model is attached through `--cmd`.
+- **Tradeoff:** the simulated selectors are deterministic, so they need no recording. For the live
+  model, every reply is cached on disk (`examples/live/cache.json`, keyed by the exact prompt), the
+  same record-once idea as flight-recorder, so the real run is reproducible offline.
 
 ## Results
 Simulated selectors, 12 tools, 48 tasks, 20 seeds. Python 3.9. Real output of
@@ -89,6 +92,38 @@ What this does and does not show (all simulated):
 - **Not significant:** `drop_negative`, `boilerplate` and `reorder` on both selectors, and
   lead-biased `stuffing` after correction even though its uncorrected interval excludes zero.
 
+## Real model (Claude Haiku 5.5)
+Same 12 tools, 48 tasks, 3 seeds per mutation, run through the `--cmd` adapter
+(`examples/claude_selector.py`) against `claude-haiku-5-5` via headless Claude Code (no tools, no
+settings, empty scratch directory). Command and raw output: `python examples/live_run.py --seeds 3`,
+[`examples/live/results.txt`](examples/live/results.txt). **768 unique model calls, 0 invalid replies.**
+Tool order was held fixed, so position bias is not controlled.
+
+```console
+== claude-haiku-5-5 (REAL): baseline accuracy 100.0%
+all tools mutated    acc   delta  95% CI (points)  p_holm  flips
+  identity        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  reorder         100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  synonyms        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  first_sentence  100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  drop_negative   100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  boilerplate     100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  typos           100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+  stuffing        100.0%    +0.0  [+0.0, +0.0]      1.000   0.0%
+```
+
+What this shows:
+- **The `--cmd` path works with a real model.** Every reply was a valid tool name.
+- **The simulated selectors did not predict this model.** They lost 15 to 31 points under synonyms,
+  truncation and typos. Haiku lost nothing, and changed zero of its 1,152 mutated choices (48 tasks x 8
+  mutations x 3 seeds, with `identity` included), so it also did not flip while staying correct.
+- **This is a ceiling effect, not proof that wording never matters.** Baseline accuracy is 100%, so there
+  is no room to fall, and tool *names* are never mutated. Names like `search_files`, `grep_text` and
+  `run_sql` give the answer away, so the model can ignore the descriptions. The benchmark cannot detect
+  sensitivity in a model that can route from names alone.
+- **Not shown:** that this holds for other models, harder or ambiguous tasks, larger registries (12 tools
+  is small), opaque tool names, or other tool orderings.
+
 ## Failure modes
 - **Not an LLM.** A lexical selector breaks on synonyms by construction. A real model may well not.
   None of these effect sizes should be quoted for a model.
@@ -105,12 +140,18 @@ What this does and does not show (all simulated):
 - `first_sentence`, `drop_negative`, `boilerplate` and `identity` are deterministic, so their 20 seeds
   are repeated work. With `--cmd` and a nondeterministic model, `identity` would show the model's own
   noise, but the other rows are not corrected for it. The p-value reported for `identity` is always 1.
-- Parameter schemas, tool names and tool-list order are not fuzzed.
+- Parameter schemas, tool names and tool-list order are not fuzzed. For the real model this is the main
+  weakness: names leak the answer. The obvious next experiment is opaque names (`tool_1` ... `tool_12`),
+  or harder tasks where two tools are plausible.
+- The live run used one model, one seed count (3) and one tool order, and the exact model behind the
+  headless CLI could not be independently confirmed.
 
 ## Run it
 ```bash
 python examples/demo.py                          # both simulated selectors, offline
-python examples/demo.py --seeds 1 --cmd "./pick"  # your selector: JSON stdin, tool name stdout
+python examples/live_run.py --count --seeds 3    # how many real model calls a run needs (768)
+python examples/live_run.py --seeds 3            # real Claude via headless Claude Code; cached
+python examples/demo.py --seeds 1 --cmd "./pick"  # your own selector: JSON stdin, tool name stdout
 pip install pytest && pytest
 ```
 `--cmd` makes `48 x (2 + 8 x seeds)` calls and skips the one-tool-at-a-time table.
