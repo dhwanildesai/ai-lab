@@ -1,0 +1,17 @@
+[project]
+name = "injection-canary-harness"
+version = "0.1.0"
+description = "Plant canary instructions in tool outputs and score which agent configs obey them"
+requires-python = ">=3.9"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
