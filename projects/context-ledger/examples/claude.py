@@ -12,6 +12,7 @@ from pathlib import Path
 
 CACHE = Path(__file__).parent / "live" / "cache.json"
 _lock = threading.Lock()
+_inflight: dict[str, threading.Lock] = {}
 _cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
 
 
@@ -24,6 +25,16 @@ def ask(model: str, system: str, prompt: str, offline: bool = False) -> str:
     with _lock:
         if k in _cache:
             return _cache[k]
+        mine = _inflight.setdefault(k, threading.Lock())
+    # One call per distinct prompt: methods that share a summary must see the same reply,
+    # otherwise the committed cache cannot reproduce the run.
+    with mine:
+        if k in _cache:
+            return _cache[k]
+        return _call(k, model, system, prompt, offline)
+
+
+def _call(k: str, model: str, system: str, prompt: str, offline: bool) -> str:
     if offline:
         raise KeyError(f"no cached reply for {k}")
     env = {x: v for x, v in os.environ.items() if x != "ANTHROPIC_API_KEY"}
