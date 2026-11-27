@@ -1,0 +1,22 @@
+8 sessions, 15 probes each, budget 700 est. tokens, 6 compaction rounds. answerer=claude-haiku-5-5 summarizer=claude-sonnet-5-5
+
+method              correct  95% CI        wrong  tokens recalls summ.calls        user rule  updated value    tool output          error  agent finding     unforeseen
+full                 100.0%  [100%, 100%]   0.0%   25835     0.0          0             100%           100%           100%           100%           100%           100%
+truncate               0.8%  [0%, 2%]       0.0%     471     0.0          0               0%             6%             0%             0%             0%             0%
+mask                   9.2%  [8%, 12%]      0.0%     631     0.0          0               0%            50%             0%             0%            19%             0%
+summary               70.8%  [68%, 72%]     0.0%     650     0.0          6             100%           100%           100%           100%            81%             0%
+structured            73.3%  [73%, 73%]     0.0%     689     0.0          6             100%           100%           100%           100%           100%             0%
+structured+recall     99.2%  [98%, 100%]    0.0%     689     4.0          6             100%           100%           100%           100%           100%            97%
+ledger                42.5%  [37%, 49%]     0.0%     568     0.0          0             100%           100%             6%            12%            50%             0%
+ledger+recall         99.2%  [98%, 100%]    0.0%     568     8.6          0             100%           100%           100%           100%           100%            97%
+hybrid+recall         99.2%  [98%, 100%]    0.0%     605     5.0          6             100%           100%           100%           100%           100%            97%
+
+paired difference in correct, ledger+recall minus other (95% CI over sessions):
+  vs full                -0.8 points  [-2.5, +0.0]
+  vs truncate           +98.3 points  [+95.8, +100.0]
+  vs mask               +90.0 points  [+87.5, +92.5]
+  vs summary            +28.3 points  [+25.0, +30.8]
+  vs structured         +25.8 points  [+24.2, +26.7]
+  vs structured+recall   +0.0 points  [+0.0, +0.0]
+  vs ledger             +56.7 points  [+50.0, +62.5]
+  vs hybrid+recall       +0.0 points  [+0.0, +0.0]

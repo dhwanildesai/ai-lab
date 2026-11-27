@@ -12,3 +12,4 @@ Chosen to avoid the "chat with your PDF" pile. Each has a measurable claim.
 - [ ] **Agent trace → regression test generator**: turn a good production trace into a pytest case automatically.
 - [ ] **Semantic diff for prompts**: show behavior differences between two prompt versions over a fixed eval set, not text diffs.
 - [ ] **Speculative tool execution**: predict and prefetch the next tool call to cut agent latency.
+- [x] **Restorable context compaction**: compact without a model call and recall on demand. *Claim: matches model-written summaries.* Result: ties with history search, loses without it (synthetic sessions).
