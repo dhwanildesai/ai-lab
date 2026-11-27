@@ -16,6 +16,7 @@ Small, rigorous experiments in AI agents and LLM infrastructure. Each project in
 |---|---|
 | [flight-recorder](projects/flight-recorder) ([live demo](https://dhwanildesai.github.io/ai-lab/flight-recorder/)) | Record/replay and diff LLM agent runs deterministically, offline |
 | [tool-description-fuzzer](projects/tool-description-fuzzer) | Wording shifts tool-selection accuracy by up to 31 points on simulated selectors, but not at all on Claude Haiku 5.5 (768 real calls; ceiling effect) |
+| [injection-canary-harness](projects/injection-canary-harness) | Split canaries score obedience without a judge; literal canaries flag a quote-only agent as 100% compromised. Plan-then-execute blocks injected tool calls but not injected answer text (simulated agents) |
 <!-- INDEX:END -->
 
 ## Conventions
