@@ -8,6 +8,7 @@ import os
 import subprocess
 import tempfile
 import threading
+import time
 from pathlib import Path
 
 CACHE = Path(__file__).parent / "live" / "cache.json"
@@ -42,7 +43,7 @@ def _call(k: str, model: str, system: str, prompt: str, offline: bool) -> str:
            "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence",
            "--system-prompt", system]  # fmt: skip
     cwd = tempfile.mkdtemp(prefix="ledger-scratch-")
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             done = subprocess.run(
                 cmd, input=prompt, capture_output=True, text=True, cwd=cwd, env=env,
@@ -50,9 +51,12 @@ def _call(k: str, model: str, system: str, prompt: str, offline: bool) -> str:
             )  # fmt: skip
             reply = json.loads(done.stdout)["result"].strip()
             break
-        except (subprocess.SubprocessError, ValueError, KeyError):
-            if attempt == 2:
-                raise
+        # OSError: the CLI can vanish for a moment while it updates itself.
+        except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+            if attempt == 4:
+                why = str(getattr(exc, "stdout", "") or exc)[-300:]
+                raise RuntimeError(f"model call failed 5 times: {why}") from None
+            time.sleep(20 * (attempt + 1))
     with _lock:
         _cache[k] = reply
         CACHE.parent.mkdir(exist_ok=True)

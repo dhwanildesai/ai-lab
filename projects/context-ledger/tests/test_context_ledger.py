@@ -101,6 +101,12 @@ def test_hook_parses_transcript_skips_injected_text_and_respects_cap(tmp_path):
     assert len(out) <= hook.LIMIT_CHARS and str(path) in out
 
 
+def test_hook_keeps_user_messages_that_start_with_pasted_text():
+    pasted = "<pasted_content>log</pasted_content> never delete the audit table"
+    row = json.dumps({"type": "user", "message": {"content": pasted}})
+    assert [e.text for e in hook.parse_transcript([row])] == [pasted]
+
+
 def test_hook_never_raises(monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", io.StringIO("garbage"))
     hook.main()

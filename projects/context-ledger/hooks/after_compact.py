@@ -18,6 +18,9 @@ from context_ledger import Event, Ledger
 
 LIMIT_CHARS = 10_000  # documented cap for hook output
 BUDGET_TOKENS = 2_200  # leaves headroom under the cap for the trailing recall note
+# Harness-injected blocks that arrive as user messages. Anything else, pasted text included,
+# is the user's and is kept.
+INJECTED = ("<system-reminder", "<command-", "<local-command", "<task-notification")
 
 
 def _text(block) -> str:
@@ -50,8 +53,7 @@ def parse_transcript(lines) -> list[Event]:
                 continue
             if b.get("type") == "text":
                 text = str(b.get("text", "")).strip()
-                # Harness-injected text arrives as user messages wrapped in tags: not the user.
-                if text and not (role == "user" and text.startswith("<")):
+                if text and not (role == "user" and text.startswith(INJECTED)):
                     events.append(Event(len(events) + 1, role, text))
             elif b.get("type") == "tool_use":
                 arg = json.dumps(b.get("input", {}))[:80]
