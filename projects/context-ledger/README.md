@@ -21,7 +21,7 @@ These are the authors' claims, from truncated page reads. I did not reproduce th
 |---|---|---|
 | Keeping prose verbatim recalled more planted facts than stock summaries (author tests own method) | [Woolford 2026](https://arxiv.org/html/2610.20116) | User messages are never reworded; omissions are declared |
 | Summaries drop process rules, and loss compounds across compactions | [Salle et al. 2026](https://arxiv.org/html/2610.31778) | Each view is rebuilt from the archive, never from a previous view |
-| A model-free fact digest matched full context on task completion | [Liu 2026](https://arxiv.org/html/2608.16370) | Deterministic fact extraction |
+| A model-free fact digest matched full context on task completion in one setup | [Liu 2026](https://arxiv.org/html/2608.16370) | Deterministic fact extraction |
 | No policy dominates; clearing tool output is cheap and strong | [Satish et al. 2026](https://arxiv.org/html/2609.32961) | Tool output becomes one-line stubs |
 | Compression should be restorable | [Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) | Append-only archive plus `recall` |
 | Structured, merged summaries scored best (vendor's own test) | [Factory](https://factory.ai/news/evaluating-compression) | Used as the strong baseline |
@@ -42,7 +42,8 @@ events ──► append-only archive ──┬─► compact(budget): user messa
 Each session has 15 questions in six types. Every method gets the same token budget (`full` is the
 uncompacted upper bound) and compaction runs repeatedly. `claude-haiku-5-5` answers; summaries are
 written by the stronger `claude-sonnet-5-5`, so the baselines are not handicapped. Seeds 100-107 were
-not run until the ledger and benchmark code were committed. All 408 model replies are committed.
+not run until the ledger and benchmark code were committed; only call-retry handling changed
+afterwards. All 408 model replies are committed.
 `+recall` methods may search once per question; **all of them use the same ledger `recall`**.
 In the tables, `recalls` counts questions per session that asked for a search (answered together in
 one extra model call), and `summ.calls` counts summarizer calls per session.
@@ -112,7 +113,8 @@ paired difference in correct, ledger+recall minus other (95% CI over sessions):
   (568 vs 689). Total cost and latency were **not** measured.
 - **The hybrid added nothing measurable** over either part.
 - **The ledger alone degrades badly when squeezed:** in B it scored 6% on tool-output questions and 12%
-  on errors. Look-alike values and errors from noise logs compete for the small facts section.
+  on errors. Probably look-alike values and
+  errors from noise logs crowd the small facts section; that cause was not isolated.
 - **Truncation and observation masking lost most early information** in these sessions, where planted
   facts are old and tool output is bulky. Masking did keep user rules in A.
 
